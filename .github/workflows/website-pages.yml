@@ -18,26 +18,32 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout du code
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # requis pour les dates de révision Git
+          fetch-depth: 0  # Requis pour les dates de révision Git
 
-      - uses: actions/setup-python@v5
+      - name: Configurer Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          cache: pip
+          cache: 'pip'
+          cache-dependency-path: requirements.txt
 
-      - name: Installation des dépendances
+      - name: Installer les dépendances
         run: pip install -r requirements.txt
 
-      - name: Construction du site
-        run: mkdocs build --strict
+      - name: Builder le site avec MkDocs
+        run: mkdocs build --strict --site-dir site
 
-      - uses: actions/configure-pages@v6
+      - name: Configurer GitHub Pages
+        uses: actions/configure-pages@v5
 
-      - uses: actions/upload-pages-artifact@v3
+      - name: Uploader l'artefact
+        uses: actions/upload-pages-artifact@v3
         with:
           path: site
+          retention-days: 1  # Nettoyage automatique
 
   deploy:
     needs: build
@@ -46,5 +52,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - id: deployment
+      - name: Déployer sur GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4
