@@ -36,9 +36,18 @@ Moins d'appels entrants, des frais de garde réduits pour l'usager qui récupèr
 
 ## Cas d'usage
 
-- Un assureur affiche dans son application l'emplacement du véhicule de son assuré et les pièces à apporter.
-- Une commune intègre la recherche sur son site pour répondre aux usagers sans passer par l'accueil téléphonique.
-- Une fourrière agréée met à jour l'état des dossiers depuis son logiciel de gestion.
+- 🚗 **Retrouver son véhicule depuis l'application de son assureur**
+    - Acteur : assureur automobile, usager assuré
+    - Description : l'assuré qui ne retrouve pas sa voiture la cherche dans l'application de son assureur. Celle-ci affiche la fourrière, ses horaires et les pièces à apporter pour la récupérer.
+    - Bénéfice : restitution plus rapide, frais de garde réduits pour l'usager
+- 🏛️ **Répondre aux usagers sur le site de la commune**
+    - Acteur : service de police municipale, accueil de mairie
+    - Description : un formulaire de recherche sur le site de la ville répond directement à la question « ma voiture a-t-elle été enlevée ? ».
+    - Bénéfice : moins d'appels à l'accueil téléphonique
+- 🔧 **Mettre à jour les dossiers depuis le logiciel de la fourrière**
+    - Acteur : fourrière agréée, éditeur de logiciel
+    - Description : chaque changement d'état (enlèvement, mainlevée, restitution) est publié automatiquement depuis le logiciel de gestion.
+    - Bénéfice : une information fiable en temps réel, sans double saisie
 
 ## Modalités d'accès
 

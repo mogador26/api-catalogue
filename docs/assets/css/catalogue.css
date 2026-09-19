@@ -7,12 +7,26 @@
 .catalogue-filtres .fr-fieldset__legend { font-weight: 700; padding-bottom: .5rem; }
 
 /* Compteurs : un bandeau sobre, un chiffre par modalité */
+/* Cadre bleu clair des chiffres clés */
+.catalogue-chiffres {
+  background: var(--background-alt-blue-france);
+  border: 1px solid var(--border-default-blue-france);
+  border-left: 4px solid var(--border-plain-blue-france);
+  padding: .5rem 1.25rem 1rem;
+  margin: 0 0 1rem;
+}
 .catalogue-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
-  border-top: 2px solid var(--border-plain-blue-france);
-  border-bottom: 1px solid var(--border-default-grey);
-  margin: 0 0 .75rem;
+  margin: 0;
+}
+.catalogue-chiffres__detail {
+  margin: .25rem 0 0;
+  padding-top: .75rem;
+  border-top: 1px solid var(--border-default-blue-france);
+  font-size: .75rem;
+  line-height: 1.25rem;
+  color: var(--text-mention-grey);
 }
 .catalogue-stats__item {
   margin: 0;
@@ -100,3 +114,133 @@
 @media (max-width: 61.99em) { .api-aside { margin-top: 1rem; } }
 /* Mention Redocly du menu Redoc : masquée (elle se superpose au contenu de la page) */
 .api-redoc a[href*="redocly.com"] { display: none; }
+
+/* Mention BETA */
+.catalogue-beta { margin-left: .5rem; vertical-align: middle; }
+.catalogue-notice-beta .fr-badge { margin-right: .5rem; }
+
+/* Icônes des titres de section des fiches */
+.api-section-titre { display: flex; align-items: center; gap: .75rem; }
+.api-section-titre__icone {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--text-action-high-blue-france);
+  background: var(--background-alt-blue-france);
+}
+.api-section-titre__icone::before { --icon-size: 1.25rem; }
+.api-aside__titre [class*="fr-icon-"] { color: var(--text-action-high-blue-france); }
+
+/* Cas d'usage : liste avec emoji et description métier */
+.cas-usage { list-style: none; padding: 0; margin: 0 0 2rem; }
+.cas-usage__item {
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--border-default-grey);
+}
+.cas-usage__item:first-child { border-top: 1px solid var(--border-default-grey); }
+.cas-usage__emoji {
+  flex: none;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  background: var(--background-alt-grey);
+}
+.cas-usage__corps { flex: 1; min-width: 0; }
+.cas-usage__titre { font-size: 1.125rem; line-height: 1.75rem; margin: 0 0 .25rem; }
+.cas-usage__description p { margin: 0 0 .5rem; }
+.cas-usage__details { display: flex; flex-wrap: wrap; gap: .25rem 1.5rem; margin: 0; font-size: .875rem; }
+.cas-usage__details div { display: flex; gap: .375rem; }
+.cas-usage__details dt { font-weight: 700; color: var(--text-mention-grey); }
+.cas-usage__details dt::after { content: " :"; }
+.cas-usage__details dd { margin: 0; }
+
+/* Parcours guidé de la page d'accueil */
+.parcours {
+  border: 1px solid var(--border-default-grey);
+  border-top: 4px solid var(--border-plain-blue-france);
+  padding: 1.5rem 1.5rem .5rem;
+  background: var(--background-default-grey);
+}
+.parcours__titre { display: flex; align-items: center; gap: .5rem; font-size: 1.5rem; line-height: 2rem; }
+.parcours__titre [class*="fr-icon-"] { color: var(--text-action-high-blue-france); }
+.parcours .fr-stepper { margin-bottom: 1.5rem; }
+.parcours__choix { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 0 1.5rem; width: 100%; }
+.parcours__choix .fr-fieldset__element { padding: 0; }
+.parcours__choix--themes .fr-radio-group .fr-label { margin-bottom: .75rem; }
+.parcours__resultats { width: 100%; outline: none; }
+.parcours__synthese { margin-bottom: 1rem; }
+.parcours__liste { list-style: none; padding: 0; margin: 0 0 1rem; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)); }
+.parcours__api { border: 1px solid var(--border-default-grey); padding: 1rem 1.25rem; background: var(--background-default-grey); }
+.parcours__api[hidden], .parcours__futur[hidden] { display: none; }
+.parcours__api-entete { display: flex; flex-direction: column; gap: .5rem; margin-bottom: .5rem; }
+.parcours__api-titre { font-size: 1.125rem; line-height: 1.5rem; margin: 0; }
+.parcours__api .fr-badges-group { margin: 0; }
+.parcours__api .fr-badges-group .fr-badge { margin-bottom: 0; }
+.parcours__etape-suivante { padding-top: .5rem; border-top: 1px dashed var(--border-default-grey); }
+.parcours__futurs { margin-bottom: 1rem; }
+.parcours__actions { margin-top: .5rem; }
+/* Les composants DSFR (fieldset, bouton) imposent un display : on rétablit l'attribut hidden */
+.parcours [hidden] { display: none !important; }
+.parcours__titre { margin-top: 0; }
+.cas-usage__details, .cas-usage__details dd, .cas-usage__details dt { padding: 0; margin: 0; }
+.cas-usage__details { margin-top: .25rem; }
+
+/* Bouton « Visite guidée » de l'en-tête */
+#visite-guidee-declencheur[hidden] { display: none; }
+
+/* Visite guidée (coach marks) */
+.visite-guidee__voile {
+  position: fixed;
+  inset: 0;
+  background: rgba(23, 23, 23, .65);
+  z-index: 1100;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .15s ease;
+}
+.visite-guidee__voile--visible { opacity: 1; visibility: visible; }
+@media (prefers-reduced-motion: reduce) { .visite-guidee__voile { transition: none; } }
+
+.visite-guidee__cible {
+  position: relative;
+  z-index: 1101;
+  outline: 3px solid var(--border-plain-blue-france);
+  outline-offset: 4px;
+  border-radius: 4px;
+  background: var(--background-default-grey);
+}
+
+.visite-guidee__bulle {
+  position: fixed;
+  z-index: 1102;
+  width: min(22rem, calc(100vw - 2rem));
+  background: var(--background-default-grey);
+  border: 1px solid var(--border-default-grey);
+  border-top: 4px solid var(--border-plain-blue-france);
+  box-shadow: 0 6px 18px rgba(0, 0, 18, .32);
+  padding: 1.25rem 1.5rem 1rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .15s ease, top .2s ease, left .2s ease;
+}
+.visite-guidee__bulle--visible { opacity: 1; visibility: visible; }
+@media (prefers-reduced-motion: reduce) { .visite-guidee__bulle { transition: none; } }
+
+.visite-guidee__etat { margin: 0 0 .25rem; font-size: .75rem; color: var(--text-mention-grey); text-transform: uppercase; letter-spacing: .02em; }
+.visite-guidee__titre { font-size: 1.125rem; line-height: 1.5rem; margin: 0 0 .5rem; }
+.visite-guidee__texte { margin: 0 0 1rem; font-size: .875rem; }
+.visite-guidee__actions { display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-wrap: wrap; }
+.visite-guidee__nav { display: flex; gap: .5rem; margin-left: auto; }
+.visite-guidee__bulle [hidden] { display: none !important; }
+
+@media (max-width: 48em) {
+  .visite-guidee__bulle { left: 1rem !important; right: 1rem; width: auto; }
+}

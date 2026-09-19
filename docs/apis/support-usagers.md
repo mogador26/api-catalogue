@@ -33,9 +33,18 @@ Chaque service numérique développait son propre formulaire de contact et sa pr
 
 ## Cas d'usage
 
-- Un téléservice ajoute un bouton « Signaler un problème » qui crée une demande avec le contexte technique.
-- Un intranet agent permet de suivre ses demandes auprès du support informatique.
-- Un robot conversationnel transfère une conversation à un agent humain en créant une demande.
+- 🆘 **Signaler un problème depuis un téléservice**
+    - Acteur : usager d'un service en ligne
+    - Description : un bouton « Signaler un problème » crée une demande avec le contexte technique (page, navigateur, étape). L'usager n'a rien à réexpliquer.
+    - Bénéfice : diagnostic plus rapide, usager rassuré
+- 🧑‍💼 **Suivre ses demandes depuis l'intranet**
+    - Acteur : agent
+    - Description : l'agent retrouve dans son intranet toutes ses demandes au support informatique et leur état d'avancement.
+    - Bénéfice : moins de relances auprès du support
+- 🤖 **Passer le relais d'un robot conversationnel à un humain**
+    - Acteur : service qui utilise un assistant conversationnel
+    - Description : quand l'assistant ne sait pas répondre, il crée une demande qui reprend la conversation, traitée par un agent.
+    - Bénéfice : aucune question sans réponse
 
 ## Modalités d'accès
 

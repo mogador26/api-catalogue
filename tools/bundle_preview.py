@@ -69,6 +69,8 @@ def resolve(key: str, href: str) -> str | None:
     """Transforme un lien relatif en route (#/…) ; None si le lien doit être supprimé."""
     if href.startswith(("http:", "https:", "mailto:", "tel:", "#", "data:", "javascript:")):
         return href
+    if "artwork/pictograms/" in href:
+        return href  # remplacé ensuite par le sprite SVG interne
     path = posixpath.normpath(posixpath.join(key or ".", href.split("#")[0]))
     frag = href.split("#", 1)[1] if "#" in href else ""
     path = "" if path == "." else path
@@ -131,7 +133,7 @@ def main():
     all_html = chrome_top + chrome_bottom + "".join(p["html"] for p in pages.values())
     sprite = []
     seen = set()
-    for m in re.finditer(r'href="[^"]*?/artwork/pictograms/([\w/-]+)\.svg#(artwork-[\w-]+)"', all_html):
+    for m in re.finditer(r'href="(?:[^"]*?/)?artwork/pictograms/([\w/-]+)\.svg#(artwork-[\w-]+)"', all_html):
         name = m.group(1)
         if name in seen:
             continue
@@ -145,7 +147,7 @@ def main():
         return f'href="#pic-{m.group(1).replace("/", "-")}-{m.group(2)}"'
 
     for p in pages.values():
-        p["html"] = re.sub(r'href="[^"]*?/artwork/pictograms/([\w/-]+)\.svg#(artwork-[\w-]+)"', pic, p["html"])
+        p["html"] = re.sub(r'href="(?:[^"]*?/)?artwork/pictograms/([\w/-]+)\.svg#(artwork-[\w-]+)"', pic, p["html"])
 
     used = set(re.findall(r"(fr-(?:icon|fi)-[\w-]+)", all_html))
     used |= {"fr-icon-arrow-right-line", "fr-icon-external-link-line", "fr-icon-arrow-up-fill", "fr-icon-mail-line",
@@ -178,7 +180,9 @@ def main():
         for k, v in pages.items()
     )
     dsfr_js = safe((SITE / "dsfr.module.min.js").read_text(encoding="utf-8"))
-    app_js = safe((ROOT / "tools/preview_app.js").read_text(encoding="utf-8"))
+    app_js = safe((ROOT / "tools/preview_app.js").read_text(encoding="utf-8")
+                  + "\n" + (DOCS / "assets/js/parcours.js").read_text(encoding="utf-8")
+                  + "\n" + (DOCS / "assets/js/visite-guidee.js").read_text(encoding="utf-8"))
     app_js = app_js.replace("__REDOC_CDN__", REDOC_CDN).replace("__MERMAID_CDN__", MERMAID_CDN)
     specs_json = safe(json.dumps(specs, ensure_ascii=False, separators=(",", ":"), default=str))
 

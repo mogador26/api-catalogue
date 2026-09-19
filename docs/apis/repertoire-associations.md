@@ -31,9 +31,18 @@ Les associations remplissent sans cesse les mêmes informations dans leurs deman
 
 ## Cas d'usage
 
-- Un portail de demande de subvention préremplit l'identité de l'association.
-- Une collectivité vérifie qu'une association sollicitant une salle est bien déclarée et active.
-- Une plateforme de bénévolat affiche une fiche vérifiée pour chaque association.
+- 📋 **Préremplir une demande de subvention**
+    - Acteur : service instructeur, association
+    - Description : l'association saisit son numéro RNA ; le portail récupère son titre, son objet et son siège.
+    - Bénéfice : moins de saisie et moins d'erreurs dans les dossiers
+- ✅ **Vérifier qu'une association est active**
+    - Acteur : collectivité qui prête une salle ou un équipement
+    - Description : avant de signer une convention, l'agent contrôle que l'association est bien déclarée et n'a pas été dissoute.
+    - Bénéfice : sécurisation juridique des conventions
+- 🙋 **Afficher des fiches associations vérifiées**
+    - Acteur : plateforme de bénévolat
+    - Description : chaque association présente sur la plateforme est rattachée à sa fiche officielle, mise à jour automatiquement.
+    - Bénéfice : confiance des bénévoles dans les structures présentées
 
 ## Modalités d'accès
 

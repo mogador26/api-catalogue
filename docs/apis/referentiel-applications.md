@@ -53,14 +53,31 @@ Les listes sont paginées (`page`, `pageSize` jusqu'à 100) et renvoient la form
 
 ## Cas d'usage
 
-| Cas d'usage | Utilisateur | Opérations principales |
-| --- | --- | --- |
-| Alimenter un outil de supervision avec la liste des applications en production et leurs exploitants | Équipe d'exploitation | `GET /applications` filtré par statut |
-| Préparer un dossier d'homologation à partir des acteurs, de l'hébergement et des conformités | RSSI | `GET /applications/{id}` et sous-ressources |
-| Suivre la dette technique et les fins de vie technologiques d'un portefeuille | Responsable de programme | Statistiques, suivi des fins de vie |
-| Identifier les fiches incomplètes pour lancer une campagne de mise à jour | Administrateur fonctionnel | Filtres `missingMoa`, `missingMoe`, `missingHosting`, comptage par IQ |
-| Synchroniser les acteurs d'une application depuis un annuaire | Intégrateur SI | Endpoints acteurs, jeton de service |
-| Afficher la fiche d'une application dans un portail interne | Équipe produit tierce | Lecture seule avec jeton de service |
+- 🖥️ **Superviser les applications en production**
+    - Acteur : équipe d'exploitation
+    - Description : l'outil de supervision récupère chaque nuit la liste des applications en production, avec leurs exploitants et leur hébergement. Les alertes sont routées vers la bonne équipe sans maintenir de liste en double.
+    - Bénéfice : incidents attribués plus vite, inventaire toujours à jour
+    - Opérations : `GET /applications` filtré par statut
+- 🛡️ **Préparer un dossier d'homologation**
+    - Acteur : RSSI, responsable de la sécurité
+    - Description : le RSSI rassemble en une requête les acteurs, l'hébergement, les données traitées et l'état de conformité d'une application. Le dossier d'homologation part d'une base fiable au lieu d'un questionnaire à remplir.
+    - Bénéfice : plusieurs jours de collecte évités par dossier
+    - Opérations : `GET /applications/{id}` et sous-ressources
+- 📉 **Piloter la dette technique d'un portefeuille**
+    - Acteur : responsable de programme, direction du numérique
+    - Description : les statistiques consolidées montrent les applications exposées à une fin de vie technologique et leur niveau de maturité. Les arbitrages budgétaires s'appuient sur des données partagées.
+    - Bénéfice : priorisation objectivée des chantiers de modernisation
+    - Opérations : statistiques, suivi des fins de vie
+- 📝 **Lancer une campagne de mise à jour des fiches**
+    - Acteur : administrateur fonctionnel
+    - Description : les filtres « sans MOA », « sans MOE » ou « sans hébergement » et l'indice de qualité identifient les fiches incomplètes. L'administrateur relance les bonnes équipes.
+    - Bénéfice : un référentiel plus complet, donc plus utile à tous
+    - Opérations : filtres `missingMoa`, `missingMoe`, `missingHosting`, indice de qualité
+- 🔄 **Synchroniser les acteurs depuis un annuaire**
+    - Acteur : intégrateur du système d'information
+    - Description : un traitement automatique met à jour les responsables d'une application quand l'annuaire change. Plus de fiches pointant vers des agents partis.
+    - Bénéfice : des contacts fiables sans saisie manuelle
+    - Opérations : endpoints acteurs, jeton de service
 
 ## Modalités d'accès
 

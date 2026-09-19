@@ -1,0 +1,102 @@
+/* Catalogue des API : compléments au DSFR (couleurs issues des variables DSFR, compatibles mode sombre) */
+
+/* Menu latéral du catalogue : pas de retrait inutile en colonne étroite */
+.catalogue-sidemenu { padding-right: 0; }
+.catalogue-sidemenu .fr-sidemenu__title { margin-bottom: .75rem; }
+.catalogue-filtres .fr-fieldset { margin: 1rem 0 0; }
+.catalogue-filtres .fr-fieldset__legend { font-weight: 700; padding-bottom: .5rem; }
+
+/* Compteurs : un bandeau sobre, un chiffre par modalité */
+.catalogue-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  border-top: 2px solid var(--border-plain-blue-france);
+  border-bottom: 1px solid var(--border-default-grey);
+  margin: 0 0 .75rem;
+}
+.catalogue-stats__item {
+  margin: 0;
+  padding: 1rem 1rem 1rem 0;
+  font-size: .875rem;
+  line-height: 1.4;
+  color: var(--text-mention-grey);
+}
+.catalogue-stats__nombre {
+  display: block;
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 700;
+  color: var(--text-title-blue-france);
+}
+.catalogue-stats__item--ouverte .catalogue-stats__nombre { color: var(--text-default-success); }
+
+.catalogue-resultat { font-weight: 700; margin: 1.5rem 0 .5rem; }
+
+/* Tuiles de même hauteur sur une ligne */
+.api-item .fr-tile { height: 100%; }
+.api-item[hidden] { display: none; }
+.api-item .fr-tile__detail { color: var(--text-mention-grey); }
+
+/* Fiche API */
+.api-fiche__liste { margin: 1rem 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: .75rem 2rem; }
+.api-fiche__liste dt { font-size: .75rem; line-height: 1.25rem; font-weight: 700; color: var(--text-mention-grey); }
+.api-fiche__liste dd { margin: 0; font-size: .875rem; overflow-wrap: anywhere; }
+.fr-tags-group { margin-top: .5rem; }
+
+/* Redoc intégré : fond clair forcé (Redoc ne gère pas le mode sombre) */
+.api-redoc {
+  border: 1px solid var(--border-default-grey);
+  background: #fff;
+  color: #161616;
+  margin: 1rem 0 2rem;
+  min-height: 20rem;
+  position: relative;
+}
+/* Neutralise le soulignement DSFR des liens dans Redoc (ancres de titres, onglets) */
+.api-redoc a { background-image: none; }
+.api-redoc a:hover { background-color: transparent; }
+.api-redoc__viewer > p { padding: 1.5rem; }
+.api-redoc h1, .api-redoc h2, .api-redoc h3, .api-redoc h4, .api-redoc h5 { margin-top: 0; }
+.api-redoc ul, .api-redoc ol { list-style: none; }
+.api-redoc code { white-space: pre-wrap; }
+
+/* Feuille de route */
+.catalogue-roadmap { margin: 1rem 0 1.5rem; overflow-x: auto; }
+.catalogue-roadmap .mermaid { background: #fff; padding: 1rem; border: 1px solid var(--border-default-grey); }
+.catalogue-roadmap figcaption { margin-top: .5rem; color: var(--text-mention-grey); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; }
+}
+
+/* Tableau des jalons : s'adapte à la largeur de la colonne */
+.catalogue-jalons table { width: 100%; }
+.catalogue-jalons th, .catalogue-jalons td { white-space: normal; vertical-align: top; }
+
+/* Panneau latéral droit des fiches API */
+.api-aside {
+  border: 1px solid var(--border-default-grey);
+  border-top: 4px solid var(--border-plain-blue-france);
+  background: var(--background-default-grey);
+}
+.api-aside__bloc { padding: 1rem 1.25rem; }
+.api-aside__bloc + .api-aside__bloc { border-top: 1px solid var(--border-default-grey); }
+.api-aside__titre {
+  font-size: .875rem;
+  line-height: 1.5rem;
+  margin: 0 0 .5rem;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  color: var(--text-mention-grey);
+}
+.api-aside__liste { list-style: none; padding: 0; margin: 0 0 .5rem; }
+.api-aside__liste li { padding: .25rem 0; font-size: .875rem; }
+.api-aside__liste li + li { border-top: 1px dashed var(--border-default-grey); }
+.api-aside__quota { margin: 0 0 .25rem; font-size: .875rem; }
+.api-aside__quota-nombre { font-size: 1.75rem; line-height: 2.25rem; font-weight: 700; color: var(--text-title-blue-france); margin-right: .25rem; }
+.api-aside__mention { color: var(--text-mention-grey); }
+.api-aside .fr-btns-group { margin-bottom: -1rem; }
+.api-aside a[href^="mailto"], .api-aside a { overflow-wrap: anywhere; }
+@media (max-width: 61.99em) { .api-aside { margin-top: 1rem; } }
+/* Mention Redocly du menu Redoc : masquée (elle se superpose au contenu de la page) */
+.api-redoc a[href*="redocly.com"] { display: none; }

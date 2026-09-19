@@ -41,7 +41,6 @@ Thumbs.db
 # Documentation
 LICENSE
 /README.md
-docs/*.md
 
 # Site généré (sera regénéré dans le container)
 site/
@@ -71,7 +70,7 @@ build/
 # On garde data/ car nécessaire pour la construction
 
 # Tools
-tools/
+# On garde tools/
 
 # Hooks (nécessaires pour la construction)
 # On garde hooks/

@@ -20,7 +20,6 @@ Chaque API est un fichier Markdown de ``docs/apis/`` doté d'un en-tête YAML
 from __future__ import annotations
 
 import html
-import json
 import logging
 import re
 from datetime import date
@@ -159,7 +158,6 @@ def on_config(config, **kwargs):
         {"API": [{a["title"]: a["src_uri"]} for a in STATE["apis"]]},
         {"Feuille de route": "feuille-de-route.md"},
         {"Publier une API": "contribuer.md"},
-        {"&#10047;Une API pour vous ? (expérimentation)": "parcourir.md"},
     ]
     return config
 
@@ -193,7 +191,6 @@ def on_page_markdown(markdown, page, config, files, **kwargs):
         lambda m: _stash(page, _render_catalogue(page, m.group(1))),
         markdown,
     )
-    markdown = markdown.replace("<!-- parcours -->", _stash(page, _render_parcours(page)))
     markdown = markdown.replace("<!-- statistiques -->", _stash(page, _render_stats(STATE["apis"])))
     markdown = markdown.replace("<!-- feuille-de-route -->", _stash(page, _render_roadmap(page)))
     markdown = markdown.replace("<!-- plan-du-site -->", _render_plan(page))
@@ -206,7 +203,6 @@ def on_page_content(html_content, page, config, files, **kwargs):
             html_content = html_content.replace(f"<p>{token}</p>", fragment).replace(token, fragment)
     aside = STATE.get("asides", {}).get(page.file.src_uri)
     if aside:
-        html_content = _decorer_fiche(html_content, page)
         coupure = html_content.find('<h2 id="specification-openapi"')
         if coupure == -1:
             coupure = len(html_content)
@@ -217,15 +213,6 @@ def on_page_content(html_content, page, config, files, **kwargs):
             "</div>" + html_content[coupure:]
         )
     return html_content
-
-
-def on_post_page(output, page, config, **kwargs):
-    """Les tuiles DSFR référencent les pictogrammes en URL absolue (site_url) : on les rend
-    relatives pour que le site fonctionne quel que soit le nom d'hôte (conteneur, proxy…)."""
-    site_url = (config.site_url or "").rstrip("/") + "/"
-    if site_url != "/":
-        output = output.replace(site_url + "artwork/", _url(page, "artwork/"))
-    return output
 
 
 def on_post_build(config, **kwargs):
@@ -318,15 +305,15 @@ def _render_stats(apis: list[dict]) -> str:
         n = sum(1 for a in apis if slug in a["acces"])
         if n:
             par_mode.append(f'{mode["libelle"]} : <span data-stat-mode="{slug}">{n}</span>')
-    #detail = " ; ".join(par_mode)
+    detail = " ; ".join(par_mode)
     return f"""
-<div class="catalogue-chiffres">
-<div class="catalogue-stats" role="group" aria-label="Chiffres clés du catalogue">
+<div class="catalogue-stats" role="group" aria-label="Répartition des API par modalité d'accès">
   <p class="catalogue-stats__item"><span class="catalogue-stats__nombre" data-stat="total">{total}</span> API au catalogue</p>
   <p class="catalogue-stats__item catalogue-stats__item--ouverte"><span class="catalogue-stats__nombre" data-stat="ouvertes">{ouvertes}</span> API ouvertes, sans authentification</p>
   <p class="catalogue-stats__item catalogue-stats__item--auth"><span class="catalogue-stats__nombre" data-stat="auth">{auth}</span> API soumises à contrôle d'accès</p>
 </div>
-</div>"""
+<p class="fr-text--sm fr-mb-4w">Mécanismes d'authentification (une API peut en proposer plusieurs) : {detail}.</p>
+"""
 
 
 def _checkbox(name: str, value: str, label: str, count: int) -> str:
@@ -540,196 +527,6 @@ def _contact_html(producteur: dict) -> str:
     return html.escape(contact)
 
 
-ICONES_SECTIONS = {
-    "description-fonctionnelle": "fr-icon-file-text-line",
-    "presentation": "fr-icon-line-chart-line",
-    "cas-dusage": "fr-icon-lightbulb-line",
-    "modalites-dacces": "fr-icon-lock-line",
-    "evolutions-du-produit": "fr-icon-git-branch-line",
-    "specification-openapi": "fr-icon-code-s-slash-line",
-}
-EMOJI_RE = re.compile(r"^\s*([\U0001F000-\U0001FAFF\u2600-\u27BF\u2B00-\u2BFF][\uFE0F\u200D\U0001F000-\U0001FAFF]*)\s*")
-
-
-def _majuscule(texte: str) -> str:
-    """Met une majuscule au premier caractère textuel (hors balises et code)."""
-    return re.sub(r"^((?:<[^>]+>)*)([a-zà-ÿ])", lambda m: m.group(1) + m.group(2).upper(), texte, count=1)
-
-
-def _decorer_fiche(html_content: str, page) -> str:
-    """Icônes DSFR devant les titres de section et mise en forme des cas d'usage."""
-    def icone(m):
-        ident = m.group(1)
-        classe = next((c for prefixe, c in ICONES_SECTIONS.items() if ident.startswith(prefixe)), None)
-        if not classe:
-            return m.group(0)
-        return (f'<h2 id="{ident}" class="api-section-titre">'
-                f'<span class="{classe} api-section-titre__icone" aria-hidden="true"></span>')
-
-    html_content = re.sub(r'<h2 id="([\w-]+)">', icone, html_content)
-
-    m = re.search(r'(<h2 id="cas-dusage"[^>]*>.*?</h2>\s*)<ul>(.*?)</ul>\s*(?=<h2|$)', html_content, re.S)
-    if not m:
-        log.warning("%s : la section « Cas d'usage » doit être une liste", page.file.src_uri)
-        return html_content
-    blocs = []
-    for bloc in re.split(r"(?=<li>\s*(?:<p>)?\s*(?:[^<]{0,4})<strong>)", m.group(2)):
-        if "<strong>" not in bloc:
-            continue
-        titre_html, _, reste = bloc.partition("<ul>")
-        titre_txt = re.sub(r"<[^>]+>", "", titre_html).strip()
-        emoji_m = EMOJI_RE.match(titre_txt)
-        emoji = emoji_m.group(1) if emoji_m else "💡"
-        titre = EMOJI_RE.sub("", titre_txt).strip()
-        description, details = "", []
-        for li in re.findall(r"<li>(.*?)</li>", reste, re.S):
-            texte = re.sub(r"^\s*<p>|</p>\s*$", "", li.strip())
-            label, sep, valeur = texte.partition(" : ")
-            if not sep:
-                label, sep, valeur = texte.partition(": ")
-            label_txt = re.sub(r"<[^>]+>", "", label).strip()
-            if not sep:
-                description += f"<p>{texte}</p>"
-            elif label_txt.lower().startswith("description"):
-                description += f"<p>{_majuscule(valeur.strip())}</p>"
-            else:
-                details.append(f"<div><dt>{label_txt}</dt><dd>{_majuscule(valeur.strip())}</dd></div>")
-        if not description:
-            log.warning("%s : cas d'usage « %s » sans description métier", page.file.src_uri, titre)
-        blocs.append(
-            '<li class="cas-usage__item">'
-            f'<span class="cas-usage__emoji" aria-hidden="true">{emoji}</span>'
-            '<div class="cas-usage__corps">'
-            f'<h3 class="cas-usage__titre">{titre}</h3>'
-            f'<div class="cas-usage__description">{description}</div>'
-            + (f'<dl class="cas-usage__details">{"".join(details)}</dl>' if details else "")
-            + "</div></li>"
-        )
-    liste = f'<ul class="cas-usage" role="list">{"".join(blocs)}</ul>'
-    return html_content[: m.start()] + m.group(1) + liste + html_content[m.end():]
-
-
-def _render_parcours(page) -> str:
-    """Parcours guidé en 3 questions pour choisir une API (page d'accueil)."""
-    cfg = STATE["cfg"]
-    apis = STATE["apis"]
-    themes = [(slug, t) for slug, t in cfg["themes"].items() if any(slug in a["themes"] for a in apis)]
-    radios_themes = "".join(
-        f'<div class="fr-fieldset__element"><div class="fr-radio-group">'
-        f'<input type="radio" id="parcours-theme-{slug}" name="parcours-theme" value="{slug}">'
-        f'<label class="fr-label" for="parcours-theme-{slug}">{html.escape(t["libelle"])}'
-        f'<span class="fr-hint-text">{html.escape(t.get("description", ""))}</span></label></div></div>'
-        for slug, t in themes
-    ) + ('<div class="fr-fieldset__element"><div class="fr-radio-group">'
-         '<input type="radio" id="parcours-theme-tous" name="parcours-theme" value="*">'
-         '<label class="fr-label" for="parcours-theme-tous">Je ne sais pas encore'
-         '<span class="fr-hint-text">Voir toutes les API adaptées aux autres critères</span></label></div></div>')
-
-    def radio(nom, valeur, libelle, aide):
-        return (f'<div class="fr-fieldset__element"><div class="fr-radio-group fr-radio-rich">'
-                f'<input type="radio" id="parcours-{nom}-{valeur}" name="parcours-{nom}" value="{valeur}">'
-                f'<label class="fr-label" for="parcours-{nom}-{valeur}">{libelle}'
-                f'<span class="fr-hint-text">{aide}</span></label></div></div>')
-
-    resultats = []
-    for a in apis:
-        if a["statut"] == "depreciee":
-            continue
-        producteur = (a["meta"].get("producteur") or {}).get("nom", "")
-        modes = ", ".join(cfg["acces"].get(m, {}).get("libelle", m) for m in a["acces"])
-        if a["ouverte"]:
-            etape = "Aucune démarche : consultez la documentation et appelez l'API directement."
-            badge = '<p class="fr-badge fr-badge--sm fr-badge--success">API ouverte</p>'
-        else:
-            etape = f"Demandez un accès à {html.escape(producteur)} ({html.escape(modes)})."
-            badge = '<p class="fr-badge fr-badge--sm fr-badge--warning">Accès contrôlé</p>'
-        statut = cfg["statuts"].get(a["statut"], {})
-        badge += (f'<p class="fr-badge fr-badge--sm fr-badge--{statut.get("badge", "info")}">'
-                  f'{statut.get("libelle", a["statut"])}</p>')
-        resultats.append(
-            f'<li class="parcours__api" data-themes="{" ".join(a["themes"])}" '
-            f'data-ouverte="{str(a["ouverte"]).lower()}" data-statut="{a["statut"]}" hidden>'
-            f'<div class="parcours__api-entete"><h4 class="parcours__api-titre">'
-            f'<a href="{_url(page, "apis/" + a["slug"] + "/")}">{html.escape(a["title"])}</a></h4>'
-            f'<div class="fr-badges-group">{badge}</div></div>'
-            f'<p class="fr-text--sm fr-mb-1w">{html.escape(str(a["meta"].get("resume", "")))}</p>'
-            f'<p class="fr-text--sm fr-mb-0 parcours__etape-suivante">'
-            f'<span class="fr-icon-arrow-right-line fr-icon--sm" aria-hidden="true"></span> '
-            f'<strong>Prochaine étape :</strong> {etape}</p></li>'
-        )
-    def _echeance(projet):
-        prod = next((j for j in projet["jalons"] if j.get("mise_en_production")), None)
-        if prod:
-            return f"Mise en production prévue en {_mois(prod['date'])}."
-        dernier = projet["jalons"][-1]
-        return f"Prochain jalon : {dernier['libelle'].lower()} en {_mois(dernier['date'])}."
-
-    futurs = "".join(
-        f'<li class="parcours__futur" data-theme="{p.get("theme", "")}" hidden>'
-        f'<strong>{html.escape(p["api"])}</strong> : {html.escape(p.get("description", ""))} '
-        f'{_echeance(p)}</li>'
-        for p in STATE["roadmap"] or [] if p.get("jalons")
-    )
-    etapes = ["Votre domaine", "Votre capacité d'accès", "Votre calendrier", "Les API recommandées"]
-    return f"""
-<section class="parcours fr-mb-6w" aria-labelledby="parcours-titre" data-parcours data-etapes='{html.escape(json.dumps(etapes, ensure_ascii=False))}'>
-<h2 id="parcours-titre" class="parcours__titre"><span class="fr-icon-compass-3-line" aria-hidden="true"></span> Trouver l'API adaptée à votre besoin</h2>
-<p class="fr-mb-3w">Répondez à trois questions : le parcours vous oriente vers les API qui conviennent et vous indique la démarche à suivre.</p>
-
-<div class="fr-stepper">
-<h3 class="fr-stepper__title" aria-live="polite"><span data-parcours-titre>{etapes[0]}</span>
-<span class="fr-stepper__state" data-parcours-etat>Étape 1 sur 4</span></h3>
-<div class="fr-stepper__steps" data-fr-current-step="1" data-fr-steps="4"></div>
-<p class="fr-stepper__details" data-parcours-suivante><span class="fr-text--bold">Étape suivante :</span> {etapes[1]}</p>
-</div>
-
-<form class="parcours__form" novalidate>
-<fieldset class="fr-fieldset parcours__etape" data-etape="1" id="parcours-q1" aria-labelledby="parcours-q1-legende parcours-q1-erreur">
-<legend class="fr-fieldset__legend" id="parcours-q1-legende">Dans quel domaine se situe votre besoin ?</legend>
-<div class="parcours__choix parcours__choix--themes">{radios_themes}</div>
-<div class="fr-messages-group" id="parcours-q1-erreur" aria-live="polite"></div>
-</fieldset>
-
-<fieldset class="fr-fieldset parcours__etape" data-etape="2" id="parcours-q2" aria-labelledby="parcours-q2-legende parcours-q2-erreur" hidden>
-<legend class="fr-fieldset__legend" id="parcours-q2-legende">Pouvez-vous engager une démarche pour obtenir un accès ?</legend>
-<div class="parcours__choix">
-{radio("acces", "ouverte", "Non, j'ai besoin d'une API utilisable tout de suite", "Uniquement les API ouvertes, sans inscription ni authentification.")}
-{radio("acces", "toutes", "Oui, je peux demander un accès", "Clé d'API, compte OAuth2 ou habilitation délivrés par le producteur.")}
-</div>
-<div class="fr-messages-group" id="parcours-q2-erreur" aria-live="polite"></div>
-</fieldset>
-
-<fieldset class="fr-fieldset parcours__etape" data-etape="3" id="parcours-q3" aria-labelledby="parcours-q3-legende parcours-q3-erreur" hidden>
-<legend class="fr-fieldset__legend" id="parcours-q3-legende">Quand souhaitez-vous utiliser l'API ?</legend>
-<div class="parcours__choix">
-{radio("calendrier", "production", "Pour un service en production", "API stables uniquement, avec engagement de service.")}
-{radio("calendrier", "tout", "Pour une expérimentation", "Les API en bêta sont aussi proposées.")}
-</div>
-<div class="fr-messages-group" id="parcours-q3-erreur" aria-live="polite"></div>
-</fieldset>
-
-<div class="parcours__etape parcours__resultats" data-etape="4" hidden tabindex="-1">
-<p class="parcours__synthese" data-parcours-synthese></p>
-<ul class="parcours__liste" role="list">{"".join(resultats)}</ul>
-<div class="fr-alert fr-alert--info fr-alert--sm" data-parcours-vide hidden>
-<p>Aucune API du catalogue ne répond à tous vos critères. Élargissez un critère, consultez la <a href="{_url(page, "feuille-de-route/")}">feuille de route</a> ou contactez l'équipe du catalogue.</p>
-</div>
-<div class="parcours__futurs" data-parcours-futurs hidden>
-<p class="fr-text--sm fr-text--bold fr-mb-1v">Bientôt dans ce domaine :</p>
-<ul class="fr-text--sm">{futurs}</ul>
-</div>
-</div>
-
-<ul class="fr-btns-group fr-btns-group--inline-md fr-btns-group--icon-left parcours__actions">
-<li><button type="button" class="fr-btn fr-btn--secondary fr-icon-arrow-left-line" data-parcours-action="precedent" hidden>Précédent</button></li>
-<li><button type="button" class="fr-btn fr-icon-arrow-right-line fr-btn--icon-right" data-parcours-action="suivant">Suivant</button></li>
-<li><button type="button" class="fr-btn fr-btn--tertiary fr-icon-refresh-line" data-parcours-action="recommencer" hidden>Recommencer</button></li>
-</ul>
-</form>
-</section>
-"""
-
-
 def _nombre(n: float) -> str:
     return f"{n:,.0f}".replace(",", "\u202f")
 
@@ -789,16 +586,16 @@ def _render_aside(api: dict, page) -> str:
     return f"""
 <aside class="api-aside" aria-label="Informations d'accès à l'API">
 <section class="api-aside__bloc" aria-labelledby="aside-ouverture">
-<h2 class="api-aside__titre" id="aside-ouverture"><span class="fr-icon-lock-line fr-icon--sm" aria-hidden="true"></span> Ouverture</h2>
+<h2 class="api-aside__titre" id="aside-ouverture">Ouverture</h2>
 {statut_acces}
 </section>
 <section class="api-aside__bloc" aria-labelledby="aside-types">
-<h2 class="api-aside__titre" id="aside-types"><span class="fr-icon-shield-line fr-icon--sm" aria-hidden="true"></span> Types d'accès</h2>
+<h2 class="api-aside__titre" id="aside-types">Types d'accès</h2>
 <ul class="api-aside__liste">{types}</ul>
 <p class="fr-text--xs fr-mb-0"><a href="#modalites-dacces">Détail des modalités d'accès</a></p>
 </section>
 <section class="api-aside__bloc" aria-labelledby="aside-swagger">
-<h2 class="api-aside__titre" id="aside-swagger"><span class="fr-icon-code-s-slash-line fr-icon--sm" aria-hidden="true"></span> Swagger de l'API</h2>
+<h2 class="api-aside__titre" id="aside-swagger">Swagger de l'API</h2>
 <p class="fr-text--sm fr-mb-1w">Spécification OpenAPI, version {html.escape(str(meta.get('version', '')))}.</p>
 <ul class="fr-btns-group fr-btns-group--sm fr-btns-group--icon-left">
 <li><a class="fr-btn fr-btn--sm fr-icon-code-s-slash-line" href="#specification-openapi">Consulter dans la page</a></li>
@@ -807,14 +604,14 @@ def _render_aside(api: dict, page) -> str:
 </ul>
 </section>
 <section class="api-aside__bloc" aria-labelledby="aside-contact">
-<h2 class="api-aside__titre" id="aside-contact"><span class="fr-icon-team-line fr-icon--sm" aria-hidden="true"></span> Contact du producteur</h2>
+<h2 class="api-aside__titre" id="aside-contact">Contact du producteur</h2>
 <p class="fr-text--sm fr-mb-0"><strong>{html.escape(str(producteur.get('nom', '')))}</strong></p>
 <p class="fr-text--sm fr-mb-1w">{html.escape(str(producteur.get('equipe', '')))}</p>
 <p class="fr-text--sm fr-mb-1v"><span class="{icone_contact} fr-icon--sm" aria-hidden="true"></span> {_contact_html(producteur)}</p>
 {support}
 </section>
 <section class="api-aside__bloc" aria-labelledby="aside-quota">
-<h2 class="api-aside__titre" id="aside-quota"><span class="fr-icon-timer-line fr-icon--sm" aria-hidden="true"></span> Appels autorisés</h2>
+<h2 class="api-aside__titre" id="aside-quota">Appels autorisés</h2>
 {_render_quota(api)}
 </section>
 </aside>

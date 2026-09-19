@@ -1,8 +1,8 @@
 site_name: Catalogue des API
 site_description: Catalogue des API de l'administration
-# site_url est requis par les tuiles DSFR (chemins des pictogrammes).
-# Adapter à l'URL de publication (ex. https://<org>.github.io/catalogue-api/).
-site_url: http://127.0.0.1:8000/
+# URL publique du site (plan du site, liens canoniques). Surchargeable par la
+# variable d'environnement SITE_URL (ex. à la construction de l'image Docker).
+site_url: !ENV [SITE_URL, "http://127.0.0.1:8000/"]
 docs_dir: docs
 use_directory_urls: true
 repo_url: https://github.com/dnum-mi/referentiel-applications
@@ -17,6 +17,11 @@ theme:
   afficher_date_de_revision: false
   bouton_hautdepage: left
   header:
+    # Mention BETA : badge vert clair à côté du titre + bandeau d'information
+    beta: true
+    beta_message: >-
+      Ce catalogue est en version bêta : son contenu et ses fonctionnalités évoluent.
+      Signalez une erreur ou proposez une amélioration à l'équipe du catalogue.
     titre: Catalogue des API
     sous_titre: Les API de l'administration, leurs usages et leurs modalités d'accès
     links:
@@ -78,6 +83,8 @@ extra_css:
 
 extra_javascript:
   - assets/js/catalogue.js
+  - assets/js/parcours.js
+  - assets/js/visite-guidee.js
 
 # ---------------------------------------------------------------------------
 # Paramétrage du catalogue (lu par hooks/catalogue.py)

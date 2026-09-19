@@ -52,6 +52,7 @@
         (spec ? spec.title : "") + '</a></div><div class="preview-redoc api-redoc"><div data-spec-id="' + slug + '"></div></div>';
       document.title = (spec ? spec.title : "API") + " – Documentation OpenAPI";
       initRedoc();
+      if (window.__initVisiteGuidee) window.__initVisiteGuidee();
       window.scrollTo(0, 0);
       return;
     }
@@ -71,6 +72,7 @@
     initFiltres(r.query);
     initRedoc();
     initMermaid();
+    if (window.__initVisiteGuidee) window.__initVisiteGuidee();
 
     if (r.ancre) {
       var cible = document.getElementById(r.ancre);

@@ -36,9 +36,18 @@ L'API réduit le délai de déclaration des ventes et fiabilise le registre nati
 
 ## Cas d'usage
 
-- Un armurier vérifie l'autorisation d'un client au moment de la vente.
-- Un éditeur de logiciel pour armuriers intègre la vérification et la déclaration de vente.
-- Une fédération sportive contrôle la validité des licences associées à une autorisation.
+- 🏪 **Contrôler l'autorisation au moment de la vente**
+    - Acteur : armurier
+    - Description : au passage en caisse, le logiciel de l'armurier interroge l'API et affiche « autorisé », « non autorisé » ou « vérification manuelle requise ». Aucune pièce papier à contrôler.
+    - Bénéfice : aucune vente à une personne non autorisée, contrôle tracé
+- 💻 **Intégrer la vérification dans un logiciel métier**
+    - Acteur : éditeur de logiciel pour armuriers
+    - Description : l'éditeur intègre la vérification et la déclaration de vente dans son produit, pour tous ses clients habilités.
+    - Bénéfice : un seul développement pour l'ensemble de la profession
+- 🎯 **Vérifier les licences des tireurs sportifs**
+    - Acteur : fédération sportive
+    - Description : la fédération s'assure que les licenciés disposant d'une autorisation de détention la conservent en cours de validité.
+    - Bénéfice : un suivi continu au lieu d'un contrôle annuel
 
 ## Modalités d'accès
 

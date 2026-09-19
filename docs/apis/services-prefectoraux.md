@@ -32,9 +32,18 @@ De nombreux services en ligne orientent l'usager vers « sa » préfecture. Chac
 
 ## Cas d'usage
 
-- Un téléservice indique à l'usager le site où déposer son dossier.
-- Une carte interactive affiche les sites et leurs horaires.
-- L'API Rendez-vous en préfecture, en préparation, s'appuie sur ces identifiants.
+- 📍 **Orienter l'usager vers le bon guichet**
+    - Acteur : téléservice
+    - Description : à la fin d'une démarche en ligne, le service indique le site compétent pour la commune de l'usager, avec l'adresse et les horaires.
+    - Bénéfice : moins de déplacements inutiles
+- 🗺️ **Afficher une carte des sites préfectoraux**
+    - Acteur : site d'information publique
+    - Description : une carte interactive présente tous les sites, leurs horaires et les démarches traitées sur place.
+    - Bénéfice : une information unique et toujours à jour
+- 📅 **Alimenter la future API Rendez-vous en préfecture**
+    - Acteur : équipe produit Rendez-vous
+    - Description : les identifiants stables des sites servent de référence commune pour la prise de rendez-vous.
+    - Bénéfice : des systèmes qui parlent la même langue
 
 ## Modalités d'accès
 

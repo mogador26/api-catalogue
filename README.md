@@ -13,6 +13,22 @@ mkdocs build --strict   # génère ./site et vérifie la complétude des fiches
 
 Avant publication, renseignez `site_url` dans `mkdocs.yml` : il sert aux pictogrammes des tuiles DSFR.
 
+## Docker (rootless)
+
+```bash
+docker build -t catalogue-api --build-arg SITE_URL=https://catalogue.exemple.gouv.fr/ .
+docker run --rm -p 8080:8080 --read-only --tmpfs /tmp --cap-drop ALL \
+  --security-opt no-new-privileges catalogue-api
+# → http://localhost:8080/   (sonde : /healthz)
+```
+
+- Construction en deux étapes : MkDocs (utilisateur `builder`, UID 10001) puis `nginxinc/nginx-unprivileged` (UID 101).
+- Aucun processus root à l'exécution : port 8080, PID et fichiers temporaires dans `/tmp`, compatible système de fichiers en lecture seule.
+- Le contenu du site appartient à root et n'est qu'en lecture pour nginx.
+- Configuration : `docker/nginx.conf` (global) et `docker/catalogue.conf` (site : en-têtes de sécurité, CSP, cache, gzip, `/healthz`, page 404).
+- IPv6 désactivé par défaut (`docker/catalogue.conf`) pour démarrer sur tout réseau de conteneur.
+- Nécessite BuildKit (par défaut depuis Docker 23).
+
 ## Organisation
 
 | Chemin | Rôle |
@@ -24,7 +40,9 @@ Avant publication, renseignez `site_url` dans `mkdocs.yml` : il sert aux pictogr
 | `hooks/catalogue.py` | Génère le catalogue, les tuiles, les compteurs, les pages thèmes, la navigation, la feuille de route et les pages Redoc |
 | `docs/assets/js/catalogue.js` | Filtres, rendu Redoc et Mermaid |
 | `docs/assets/vendor/` | Redoc 2.5.4 et Mermaid 11.17.2 servis localement (aucun CDN) |
-| `overrides/footer.html` | Pied de page : liens corrigés pour les sous-pages |
+| `overrides/header.html`, `overrides/footer.html` | En-tête (mention BETA) et pied de page |
+| `Dockerfile`, `docker/` | Image rootless nginx |
+| `docs/assets/js/visite-guidee.js` | Visite guidée (accueil et fiche API), démarrage auto + bouton dans l'en-tête |
 
 ## Ajouter une API
 

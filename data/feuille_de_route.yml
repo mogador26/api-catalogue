@@ -21,6 +21,15 @@
     - { date: 2027-02, libelle: Bêta ouverte }
     - { date: 2027-05, libelle: Mise en production, mise_en_production: true }
 
+- api: Référentiel des applications
+  branche: refapp-mcp
+  theme: referentiel
+  acces: [api-key]
+  description: Interroger le référentiel des applications.
+  jalons:
+    - { date: 2024-10, libelle: Exploration }
+    - { date: 2025-03, libelle: Mise en production, mise_en_production: true }
+
 - api: Serveur MCP du Référentiel des applications
   branche: refapp-mcp
   theme: referentiel

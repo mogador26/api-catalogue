@@ -50,11 +50,18 @@ producteur:
 ## Description fonctionnelle
 ## Présentation pour les décideurs
 ## Cas d'usage
+
+- 🏪 **Titre du cas d'usage**
+    - Acteur : qui utilise l'API
+    - Description : le besoin métier, décrit du point de vue de l'utilisateur
+    - Bénéfice : ce que l'usage apporte
+    - Opérations : endpoints concernés (facultatif)
+
 ## Modalités d'accès
 ## Évolutions du produit
 ```
 
-Les cinq sections sont obligatoires. Sont ajoutés automatiquement :
+Les cinq sections sont obligatoires. Les cas d'usage s'écrivent sous forme de liste : un emoji et un titre en gras, puis une sous-liste « Libellé : valeur » (indentée de 4 espaces). La ligne « Description » est obligatoire et devient la description métier ; les autres lignes s'affichent comme détails. Sont ajoutés automatiquement :
 
 - en haut, la fiche d'identité (badges, résumé, producteur, URL de base) ;
 - à droite, le panneau d'accès : API ouverte ou soumise à contrôle, types d'accès, liens vers le swagger, contact du producteur et nombre d'appels autorisés par client ;

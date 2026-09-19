@@ -33,9 +33,18 @@ Cette version est **dépréciée** : elle sera remplacée par l'API Aides publiq
 
 ## Cas d'usage
 
-- Une collectivité suit les subventions qu'elle a reçues de l'État sur plusieurs exercices.
-- Un média de données construit une carte des aides par département.
-- Une association vérifie l'état de versement d'une subvention attribuée.
+- 🏘️ **Suivre les subventions reçues par une collectivité**
+    - Acteur : service financier d'une collectivité
+    - Description : la collectivité retrouve toutes les subventions de l'État qui lui ont été attribuées sur plusieurs exercices, avec les montants versés.
+    - Bénéfice : un rapprochement comptable facilité
+- 📰 **Cartographier les aides publiques**
+    - Acteur : média de données, chercheur
+    - Description : un journaliste agrège les subventions par département et par programme pour publier une carte interactive.
+    - Bénéfice : transparence sur l'usage de l'argent public
+- 🤝 **Vérifier le versement d'une subvention**
+    - Acteur : association bénéficiaire
+    - Description : le trésorier consulte l'état de versement d'une subvention attribuée sans avoir à contacter le service instructeur.
+    - Bénéfice : une trésorerie mieux anticipée
 
 ## Modalités d'accès
 

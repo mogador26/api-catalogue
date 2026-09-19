@@ -34,9 +34,18 @@ L'attente d'information sur l'avancement d'un dossier génère une part importan
 
 ## Cas d'usage
 
-- Une association d'accompagnement suit les dossiers des personnes qu'elle aide.
-- Un employeur vérifie, avec l'accord du salarié, qu'une demande de renouvellement est en cours.
-- L'usager consulte l'état de sa demande depuis une application mobile.
+- 🧭 **Accompagner les personnes dans leurs démarches**
+    - Acteur : association d'aide aux étrangers
+    - Description : avec l'accord de la personne, l'association suit l'avancement de sa demande et l'aide à fournir les pièces demandées dans les délais.
+    - Bénéfice : moins de dossiers bloqués, moins de ruptures de droit
+- 💼 **Vérifier le renouvellement en cours d'un salarié**
+    - Acteur : employeur
+    - Description : l'employeur s'assure, avec le consentement du salarié, qu'une demande de renouvellement est bien en instruction.
+    - Bénéfice : continuité du contrat de travail sécurisée
+- 📱 **Suivre sa demande depuis une application mobile**
+    - Acteur : usager
+    - Description : l'usager consulte l'état de sa demande et la validité de son récépissé sans se déplacer en préfecture.
+    - Bénéfice : moins de déplacements et d'appels en préfecture
 
 ## Modalités d'accès
 
