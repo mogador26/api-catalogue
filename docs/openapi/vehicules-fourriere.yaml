@@ -1,0 +1,196 @@
+openapi: 3.0.3
+info:
+  title: API Véhicules en fourrière
+  description: Consultation de l'état de mise en fourrière d'un véhicule (API de démonstration).
+  version: 1.3.0
+  contact: {}
+  license:
+    name: Licence Ouverte Etalab 2.0
+    url: https://github.com/etalab/licence-ouverte/blob/master/LO.md
+servers:
+- url: https://api.exemple.gouv.fr/fourriere/v1
+paths:
+  /vehicules/{immatriculation}:
+    get:
+      summary: Consulter la situation d'un véhicule
+      description: Renvoie la mise en fourrière en cours pour une immatriculation, ou 404 s'il n'y en
+        a pas.
+      tags:
+      - Consultation
+      parameters:
+      - name: immatriculation
+        in: path
+        description: Numéro SIV
+        required: true
+        schema:
+          type: string
+        example: AB-123-CD
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MiseEnFourriere'
+        '401':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '404':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '429':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+  /fourrieres/{id}:
+    get:
+      summary: Consulter une fourrière
+      description: Adresse, horaires et contact d'une fourrière agréée.
+      tags:
+      - Consultation
+      parameters:
+      - name: id
+        in: path
+        description: Identifiant de la fourrière
+        required: true
+        schema:
+          type: string
+        example: FR-069-004
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fourriere'
+        '404':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+  /dossiers/{id}/etat:
+    put:
+      summary: Mettre à jour l'état d'un dossier
+      description: Réservé aux fourrières agréées.
+      tags:
+      - Fourrières
+      parameters:
+      - name: id
+        in: path
+        description: Identifiant du dossier
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MiseEnFourriere'
+        '400':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '401':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '403':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '404':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - etat
+              properties:
+                etat:
+                  $ref: '#/components/schemas/Etat'
+                commentaire:
+                  type: string
+components:
+  schemas:
+    Etat:
+      type: string
+      enum:
+      - enleve
+      - attente_mainlevee
+      - restituable
+      - remis_domaines
+      - restitue
+    Fourriere:
+      type: object
+      properties:
+        id:
+          type: string
+        nom:
+          type: string
+        adresse:
+          type: string
+        horaires:
+          type: string
+          example: Lun-Sam 8h-19h
+        telephone:
+          type: string
+    MiseEnFourriere:
+      type: object
+      properties:
+        dossier:
+          type: string
+        immatriculation:
+          type: string
+        etat:
+          $ref: '#/components/schemas/Etat'
+        date_enlevement:
+          type: string
+          format: date-time
+        motif:
+          type: string
+          example: Stationnement gênant
+        categorie_frais:
+          type: string
+          example: VP
+        fourriere:
+          $ref: '#/components/schemas/Fourriere'
+    Erreur:
+      type: object
+      properties:
+        code:
+          type: string
+          example: non_trouve
+        message:
+          type: string
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: Clé d'API délivrée par le producteur.
+security:
+- ApiKey: []

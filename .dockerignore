@@ -1,0 +1,86 @@
+# =============================================================================
+# .dockerignore pour le Catalogue des API
+# Exclure les fichiers et répertoires non nécessaires pour le build Docker
+# =============================================================================
+
+# Git
+.git
+.gitignore
+.gitmodules
+
+# Python
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.pytest_cache
+.coverage
+htmlcov/
+.tox/
+.nox/
+.eggs/
+*.egg-info/
+*.egg
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+LICENSE
+/README.md
+docs/*.md
+
+# Site généré (sera regénéré dans le container)
+site/
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
+dist/
+build/
+*.tar.gz
+*.zip
+
+# Docker assets (explicitement COPY, ne pas ignorer)
+# docker-assets/ est nécessaire pour la configuration Nginx
+
+# Overrides (déjà inclus dans le COPY .)
+# Mais on garde overrides/ car nécessaire pour le thème DSFR
+
+# Data (fichiers YAML du catalogue)
+# On garde data/ car nécessaire pour la construction
+
+# Tools
+tools/
+
+# Hooks (nécessaires pour la construction)
+# On garde hooks/
+
+# docs (nécessaires pour la construction)
+# On garde docs/
+
+# mkdocs.yml (nécessaire pour la construction)
+# On garde mkdocs.yml
+
+# requirements.txt (nécessaire pour la construction)
+# On garde requirements.txt

@@ -1,0 +1,16 @@
+# Catalogue des API : dépendances de construction du site
+# Installation : pip install -r requirements.txt
+
+# Générateur de site statique
+mkdocs==1.6.1
+
+# Thème DSFR (Système de design de l'État) et ses composants Markdown (tuiles, grille…)
+mkdocs-dsfr==0.26.1
+dsfr-structure==0.12.0
+
+# Extensions Markdown : blocs Mermaid (superfences), md_in_html, attr_list
+pymdown-extensions==10.21.2
+Markdown==3.10.2
+
+# Lecture des en-têtes YAML des fiches, de la feuille de route et des specs OpenAPI
+PyYAML==6.0.3

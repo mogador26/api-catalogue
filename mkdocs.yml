@@ -1,0 +1,136 @@
+site_name: Catalogue des API
+site_description: Catalogue des API de l'administration
+# site_url est requis par les tuiles DSFR (chemins des pictogrammes).
+# Adapter à l'URL de publication (ex. https://<org>.github.io/catalogue-api/).
+site_url: http://127.0.0.1:8000/
+docs_dir: docs
+use_directory_urls: true
+repo_url: https://github.com/dnum-mi/referentiel-applications
+
+theme:
+  name: dsfr
+  custom_dir: overrides
+  # Bloc-marque DSFR : Marianne + intitulé, positionné en haut à gauche de l'en-tête
+  intitule: "République<br>française"
+  afficher_menu_lateral: true
+  afficher_bouton_editer: false
+  afficher_date_de_revision: false
+  bouton_hautdepage: left
+  header:
+    titre: Catalogue des API
+    sous_titre: Les API de l'administration, leurs usages et leurs modalités d'accès
+    links:
+      - name: Feuille de route
+        url: "feuille-de-route/"
+        icon: road-map-line
+      - name: Publier une API
+        url: "contribuer/"
+        icon: add-circle-line
+  footer:
+    description: >-
+      Ce catalogue recense les API produites par l'administration :
+      description fonctionnelle, cas d'usage, modalités d'accès,
+      documentation OpenAPI et contacts des équipes productrices.
+    # Références aux sites gouvernementaux (colonne de droite du pied de page)
+    links:
+      - name: info.gouv.fr
+        url: https://www.info.gouv.fr/
+      - name: service-public.fr
+        url: https://www.service-public.fr/
+      - name: legifrance.gouv.fr
+        url: https://www.legifrance.gouv.fr/
+      - name: data.gouv.fr
+        url: https://www.data.gouv.fr/
+      - name: api.gouv.fr
+        url: https://api.gouv.fr/
+    # Mention d'accessibilité (en bas à gauche du pied de page)
+    bottom_links:
+      - name: "Accessibilité : non conforme"
+        url: accessibilite/
+      - name: Mentions légales
+        url: mentions-legales/
+      - name: Plan du site
+        url: plan-du-site/
+
+plugins:
+  - search:
+      lang: fr
+  - dsfr_base
+
+hooks:
+  - hooks/catalogue.py
+
+markdown_extensions:
+  - dsfr_structure.extension.all_extensions
+  - md_in_html
+  - attr_list
+  - tables
+  - toc:
+      permalink: false
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_div_format
+
+extra_css:
+  - assets/css/catalogue.css
+
+extra_javascript:
+  - assets/js/catalogue.js
+
+# ---------------------------------------------------------------------------
+# Paramétrage du catalogue (lu par hooks/catalogue.py)
+# ---------------------------------------------------------------------------
+extra:
+  catalogue:
+    # Thèmes disponibles : slug -> libellé, pictogramme DSFR, description
+    themes:
+      transport:
+        libelle: Transport
+        picto: document/vehicle-registration
+        description: Véhicules, mobilité et sécurité routière.
+      armes:
+        libelle: Armes
+        picto: institutions/police
+        description: Détention, autorisations et traçabilité des armes.
+      finances:
+        libelle: Finances
+        picto: institutions/money
+        description: Budget, subventions et données financières publiques.
+      entreprises-associations:
+        libelle: Entreprises et associations
+        picto: buildings/companie
+        description: Identification et vie des personnes morales.
+      support:
+        libelle: Support
+        picto: digital/self-training
+        description: Assistance aux usagers et aux agents.
+      etrangers:
+        libelle: Étrangers
+        picto: document/passport
+        description: Titres de séjour et démarches des ressortissants étrangers.
+      referentiel:
+        libelle: Référentiel
+        picto: document/binders
+        description: Données de référence partagées entre systèmes d'information.
+    # Modalités d'accès : slug -> libellé ; "ouverte: true" = sans authentification
+    acces:
+      ouverte:
+        libelle: API ouverte
+        ouverte: true
+        description: Appel direct, sans authentification ni inscription.
+      api-key:
+        libelle: Clé d'API (API-KEY)
+        description: Clé secrète délivrée par le producteur, transmise dans un en-tête HTTP.
+      oauth2:
+        libelle: OAuth2 / OpenID Connect
+        description: Jeton d'accès obtenu auprès d'un fournisseur d'identité, transmis en en-tête Authorization.
+      habilitation:
+        libelle: Habilitation préalable
+        description: Demande d'accès instruite par le producteur (cadre juridique, finalité, sécurité).
+    statuts:
+      production: { libelle: En production, badge: success }
+      beta: { libelle: Bêta, badge: new }
+      depreciee: { libelle: Dépréciée, badge: warning }
+    feuille_de_route: data/feuille_de_route.yml

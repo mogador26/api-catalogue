@@ -1,0 +1,124 @@
+openapi: 3.0.3
+info:
+  title: API Subventions
+  description: 'Subventions attribuées aux collectivités et associations. Dépréciée : remplacée par l''API
+    Aides publiques (API de démonstration).'
+  version: 1.4.0
+  contact: {}
+  license:
+    name: Licence Ouverte Etalab 2.0
+    url: https://github.com/etalab/licence-ouverte/blob/master/LO.md
+servers:
+- url: https://api.exemple.gouv.fr/subventions/v1
+paths:
+  /subventions:
+    get:
+      summary: Rechercher des subventions
+      description: Filtrage par bénéficiaire, programme, département et année.
+      tags:
+      - Subventions
+      parameters:
+      - name: page
+        in: query
+        description: Numéro de page (à partir de 1)
+        required: false
+        schema:
+          type: integer
+        example: 1
+      - name: taille
+        in: query
+        description: Éléments par page (max 100)
+        required: false
+        schema:
+          type: integer
+        example: 20
+      - name: annee
+        in: query
+        description: Exercice
+        required: false
+        schema:
+          type: integer
+        example: 2025
+      - name: departement
+        in: query
+        description: Code département
+        required: false
+        schema:
+          type: string
+        example: '69'
+      - name: programme
+        in: query
+        description: Programme budgétaire
+        required: false
+        schema:
+          type: string
+        example: '216'
+      - name: beneficiaire
+        in: query
+        description: SIREN ou numéro RNA
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resultats:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Subvention'
+                  total:
+                    type: integer
+        '400':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '429':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+      deprecated: true
+components:
+  schemas:
+    Subvention:
+      type: object
+      properties:
+        id:
+          type: string
+        beneficiaire:
+          type: object
+          properties:
+            nom:
+              type: string
+            siren:
+              type: string
+            rna:
+              type: string
+        programme:
+          type: string
+        objet:
+          type: string
+        montant_attribue:
+          type: number
+          example: 15000
+        montant_verse:
+          type: number
+        date_decision:
+          type: string
+          format: date
+    Erreur:
+      type: object
+      properties:
+        code:
+          type: string
+          example: non_trouve
+        message:
+          type: string

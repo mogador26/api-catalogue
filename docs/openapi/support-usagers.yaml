@@ -1,0 +1,273 @@
+openapi: 3.0.3
+info:
+  title: API Support usagers
+  description: Création et suivi de demandes d'assistance mutualisées (API de démonstration).
+  version: 1.1.0
+  contact: {}
+  license:
+    name: Licence Ouverte Etalab 2.0
+    url: https://github.com/etalab/licence-ouverte/blob/master/LO.md
+servers:
+- url: https://api.exemple.gouv.fr/support/v1
+paths:
+  /demandes:
+    post:
+      summary: Créer une demande
+      description: Crée une demande d'assistance dans l'outil mutualisé.
+      tags:
+      - Demandes
+      parameters: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Demande'
+        '400':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '401':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - categorie
+              - description
+              - demandeur
+              properties:
+                categorie:
+                  type: string
+                  example: acces_compte
+                description:
+                  type: string
+                demandeur:
+                  type: object
+                  properties:
+                    courriel:
+                      type: string
+                      format: email
+                    nom:
+                      type: string
+                contexte:
+                  type: object
+                  additionalProperties: true
+    get:
+      summary: Lister les demandes
+      description: Demandes créées par le service appelant.
+      tags:
+      - Demandes
+      parameters:
+      - name: page
+        in: query
+        description: Numéro de page (à partir de 1)
+        required: false
+        schema:
+          type: integer
+        example: 1
+      - name: taille
+        in: query
+        description: Éléments par page (max 100)
+        required: false
+        schema:
+          type: integer
+        example: 20
+      - name: etat
+        in: query
+        description: État
+        required: false
+        schema:
+          type: string
+          enum:
+          - nouvelle
+          - en_cours
+          - en_attente
+          - resolue
+          - fermee
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resultats:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Demande'
+                  total:
+                    type: integer
+        '401':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+  /demandes/{id}:
+    get:
+      summary: Consulter une demande
+      description: État, historique et réponses.
+      tags:
+      - Demandes
+      parameters:
+      - name: id
+        in: path
+        description: Identifiant
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Demande'
+        '401':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '404':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+  /demandes/{id}/pieces-jointes:
+    post:
+      summary: Ajouter une pièce jointe
+      description: Fichier de 10 Mo au maximum.
+      tags:
+      - Demandes
+      parameters:
+      - name: id
+        in: path
+        description: Identifiant
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+        '401':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '404':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '413':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+  /webhooks:
+    put:
+      summary: Déclarer l'URL de notification
+      description: Les notifications sont signées (en-tête X-Signature, HMAC SHA-256).
+      tags:
+      - Notifications
+      parameters: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                  secret:
+                    type: string
+        '400':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '401':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  format: uri
+components:
+  schemas:
+    Demande:
+      type: object
+      properties:
+        id:
+          type: string
+        categorie:
+          type: string
+        etat:
+          type: string
+        cree_le:
+          type: string
+          format: date-time
+        messages:
+          type: array
+          items:
+            type: object
+            properties:
+              auteur:
+                type: string
+              date:
+                type: string
+                format: date-time
+              texte:
+                type: string
+    Erreur:
+      type: object
+      properties:
+        code:
+          type: string
+          example: non_trouve
+        message:
+          type: string
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: Clé d'API délivrée par le producteur.
+security:
+- ApiKey: []

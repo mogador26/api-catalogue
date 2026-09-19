@@ -1,0 +1,134 @@
+openapi: 3.0.3
+info:
+  title: API Répertoire des associations
+  description: Informations publiques des associations déclarées (API de démonstration).
+  version: 3.0.0
+  contact: {}
+  license:
+    name: Licence Ouverte Etalab 2.0
+    url: https://github.com/etalab/licence-ouverte/blob/master/LO.md
+servers:
+- url: https://api.exemple.gouv.fr/associations/v3
+paths:
+  /associations:
+    get:
+      summary: Rechercher une association
+      description: Recherche plein texte sur le titre et l'objet, pagination par curseur.
+      tags:
+      - Associations
+      parameters:
+      - name: q
+        in: query
+        description: Texte recherché
+        required: true
+        schema:
+          type: string
+        example: club de football
+      - name: code_postal
+        in: query
+        description: Code postal du siège
+        required: false
+        schema:
+          type: string
+      - name: curseur
+        in: query
+        description: Curseur de pagination
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resultats:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Association'
+                  curseur_suivant:
+                    type: string
+                    nullable: true
+        '400':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '429':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+  /associations/{rna}:
+    get:
+      summary: Consulter une association
+      description: Fiche complète à partir du numéro RNA.
+      tags:
+      - Associations
+      parameters:
+      - name: rna
+        in: path
+        description: Numéro RNA
+        required: true
+        schema:
+          type: string
+        example: W751234567
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Association'
+        '404':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+components:
+  schemas:
+    Association:
+      type: object
+      properties:
+        rna:
+          type: string
+        siren:
+          type: string
+          nullable: true
+        titre:
+          type: string
+        objet:
+          type: string
+        siege:
+          type: object
+          properties:
+            adresse:
+              type: string
+            code_postal:
+              type: string
+            commune:
+              type: string
+        date_creation:
+          type: string
+          format: date
+        derniere_declaration:
+          type: string
+          format: date
+        etat:
+          type: string
+          enum:
+          - active
+          - dissoute
+    Erreur:
+      type: object
+      properties:
+        code:
+          type: string
+          example: non_trouve
+        message:
+          type: string

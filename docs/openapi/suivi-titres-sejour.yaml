@@ -1,0 +1,128 @@
+openapi: 3.0.3
+info:
+  title: API Suivi des demandes de titre de séjour
+  description: État d'avancement d'une demande, avec consentement de l'usager (API de démonstration, bêta).
+  version: 0.9.0
+  contact: {}
+  license:
+    name: Licence Ouverte Etalab 2.0
+    url: https://github.com/etalab/licence-ouverte/blob/master/LO.md
+servers:
+- url: https://api.exemple.gouv.fr/titres-sejour/v1
+paths:
+  /demandes/moi:
+    get:
+      summary: Consulter la demande de l'usager
+      description: Renvoie la demande associée au jeton de l'usager.
+      tags:
+      - Suivi
+      parameters: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Demande'
+        '401':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '403':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '404':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+  /consentements/{id}:
+    delete:
+      summary: Révoquer un consentement
+      description: L'usager retire l'accès accordé à une structure.
+      tags:
+      - Consentement
+      parameters:
+      - name: id
+        in: path
+        description: Identifiant du consentement
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  revoque:
+                    type: boolean
+        '401':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '404':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+components:
+  schemas:
+    Demande:
+      type: object
+      properties:
+        numero:
+          type: string
+          example: 6901-2026-001234
+        type_titre:
+          type: string
+          example: Carte de séjour pluriannuelle
+        etape:
+          type: string
+          enum:
+          - depot
+          - instruction
+          - pieces_demandees
+          - decision
+          - titre_disponible
+        pieces_attendues:
+          type: array
+          items:
+            type: string
+        recepisse_valide_jusqu_au:
+          type: string
+          format: date
+          nullable: true
+        prefecture:
+          type: string
+    Erreur:
+      type: object
+      properties:
+        code:
+          type: string
+          example: non_trouve
+        message:
+          type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: Consentement de l'usager requis.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.exemple.gouv.fr/oauth2/authorize
+          tokenUrl: https://auth.exemple.gouv.fr/oauth2/token
+          scopes:
+            demande:lecture: Lire l'état d'une demande
+security:
+- OAuth2: []

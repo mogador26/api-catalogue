@@ -1,0 +1,155 @@
+# =============================================================================
+# Configuration Nginx sécurisée pour le Catalogue des API
+# Conforme aux bonnes pratiques OWASP
+# =============================================================================
+
+user appuser appuser;
+worker_processes auto;
+
+# Désactiver les privilèges root (déjà géré par Docker)
+pid /run/nginx.pid;
+
+# Configuration des événements
+events {
+    worker_connections 1024;
+    multi_accept on;
+    use epoll;
+}
+
+# =============================================================================
+# Configuration HTTP globale
+# =============================================================================
+
+http {
+    # Optimisation des performances
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+    server_tokens off;  # OWASP : Masquer la version de Nginx
+
+    # Buffer sizes pour la sécurité
+    client_body_buffer_size 16k;
+    client_header_buffer_size 2k;
+    client_max_body_size 10m;
+    large_client_header_buffers 4 8k;
+
+    # Timeouts pour prévenir les attaques par DoS
+    client_body_timeout 10;
+    client_header_timeout 10;
+    keepalive_timeout 15;
+    send_timeout 10;
+
+    # Limiter le nombre de connexions par IP
+    limit_conn_zone $binary_remote_addr zone=conn_limit_per_ip:10m;
+    limit_conn conn_limit_per_ip 20;
+
+    # Limiter le taux de requêtes
+    limit_req_zone $binary_remote_addr zone=req_limit_per_ip:10m rate=10r/s;
+
+    # Types MIME
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    # Compression
+    gzip on;
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_types text/plain text/css text/xml application/json application/javascript 
+               application/xml application/xml+rss text/javascript application/x-httpd-php;
+
+    # Cachage des erreurs
+    gzip_disable "msie6";
+
+    # logging
+    log_format main escape=json
+        '{"time": "$time_iso8601", '
+        '"remote_addr": "$remote_addr", '
+        '"remote_user": "$remote_user", '
+        '"request": "$request", '
+        '"status": "$status", '
+        '"body_bytes_sent": "$body_bytes_sent", '
+        '"request_time": "$request_time", '
+        '"http_referrer": "$http_referer", '
+        '"http_user_agent": "$http_user_agent", '
+        '"http_x_forwarded_for": "$http_x_forwarded_for"}';
+
+    access_log /var/log/nginx/access.log main;
+    error_log /var/log/nginx/error.log warn;
+
+    # Inclure les headers de sécurité OWASP
+    include /etc/nginx/snippets/security-headers.conf;
+
+    # =========================================================================
+    # Server principal
+    # =========================================================================
+
+    server {
+        listen ${NGINX_PORT};
+        server_name _;
+        root /var/www/html;
+        index index.html;
+
+        # Limiter les méthodes HTTP (OWASP)
+        limit_except GET HEAD OPTIONS {
+            deny all;
+        }
+
+        # Limiter le taux de requêtes
+        limit_req zone=req_limit_per_ip burst=20 nodelay;
+        limit_conn conn_limit_per_ip 20;
+
+        # Désactiver .htaccess et autres fichiers sensibles
+        location ~ /\. {
+            deny all;
+            access_log off;
+            log_not_found off;
+        }
+
+        # Bloquer l'accès aux fichiers cachés
+        location ~ ~$ {
+            deny all;
+            access_log off;
+            log_not_found off;
+        }
+
+        # Servir les fichiers statiques
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+
+        # Sécurité supplémentaire pour les assets
+        location ~* \.(css|js|png|jpg|jpeg|gif|ico|svg|woff2?|eot|ttf|otf)$ {
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+            access_log off;
+        }
+
+        # Bloquer l'exécution de scripts dans les uploads
+        location ~* \.(php|pl|py|jsp|asp|sh|cgi)$ {
+            deny all;
+            return 403;
+        }
+
+        # Rediriger les erreurs 404 vers la page d'accueil (SPA-like)
+        location = /404.html {
+            internal;
+        }
+
+        # Gérer les erreurs
+        error_page 404 /404.html;
+        error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+            internal;
+        }
+    }
+
+    # =========================================================================
+    # Désactiver le server par défaut de Nginx
+    # =========================================================================
+
+    # Supprimer la configuration par défaut
+    # (gérée par le COPY du Dockerfile qui écrase tout)
+}

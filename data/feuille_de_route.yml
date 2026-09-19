@@ -1,0 +1,41 @@
+# Feuille de route des nouvelles API.
+# Chaque projet devient une branche du gitGraph ; le jalon « mise_en_production »
+# fusionne la branche dans le catalogue. Dates au format AAAA-MM.
+- api: API Rendez-vous en préfecture
+  branche: rdv-prefecture
+  theme: etrangers
+  acces: [oauth2]
+  description: Consulter les créneaux disponibles et gérer les rendez-vous des usagers.
+  jalons:
+    - { date: 2026-10, libelle: Cadrage }
+    - { date: 2027-01, libelle: Bêta privée }
+    - { date: 2027-04, libelle: Mise en production, mise_en_production: true }
+
+- api: API Aides publiques
+  branche: aides-publiques
+  theme: finances
+  acces: [ouverte]
+  description: Remplace l'API Subventions avec un modèle de données enrichi.
+  jalons:
+    - { date: 2026-11, libelle: Conception du modèle }
+    - { date: 2027-02, libelle: Bêta ouverte }
+    - { date: 2027-05, libelle: Mise en production, mise_en_production: true }
+
+- api: Serveur MCP du Référentiel des applications
+  branche: refapp-mcp
+  theme: referentiel
+  acces: [oauth2]
+  description: Interroger le référentiel en langage naturel (chantier prévu par l'équipe RefApp, dates indicatives).
+  jalons:
+    - { date: 2026-11, libelle: Exploration }
+    - { date: 2027-03, libelle: Prototype }
+
+- api: API Vérification du permis de conduire
+  branche: permis-conduire
+  theme: transport
+  acces: [habilitation, oauth2]
+  description: Vérifier la validité d'un permis pour les loueurs et employeurs habilités.
+  jalons:
+    - { date: 2027-01, libelle: Cadrage juridique }
+    - { date: 2027-05, libelle: Homologation }
+    - { date: 2027-09, libelle: Mise en production, mise_en_production: true }

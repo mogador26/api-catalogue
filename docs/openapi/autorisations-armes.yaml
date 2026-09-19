@@ -1,0 +1,170 @@
+openapi: 3.0.3
+info:
+  title: API Vérification des autorisations d'armes
+  description: Vérification d'autorisation avant vente et déclaration de transaction (API de démonstration).
+  version: 2.1.0
+  contact: {}
+  license:
+    name: Licence Ouverte Etalab 2.0
+    url: https://github.com/etalab/licence-ouverte/blob/master/LO.md
+servers:
+- url: https://api.exemple.gouv.fr/armes/v2
+paths:
+  /verifications:
+    post:
+      summary: Vérifier une autorisation
+      description: Indique si le détenteur peut acquérir une arme de la catégorie demandée.
+      tags:
+      - Vérification
+      parameters: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultatVerification'
+        '400':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '401':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '403':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - identifiant_detenteur
+              - categorie
+              properties:
+                identifiant_detenteur:
+                  type: string
+                  example: D-2025-000123
+                categorie:
+                  type: string
+                  enum:
+                  - A1
+                  - B
+                  - C
+      security:
+      - OAuth2:
+        - autorisation:verifier
+  /ventes:
+    post:
+      summary: Déclarer une vente
+      description: Enregistre la transaction dans le registre de détention.
+      tags:
+      - Transactions
+      parameters: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  numero_declaration:
+                    type: string
+        '400':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '401':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '403':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '409':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Vente'
+      security:
+      - OAuth2:
+        - vente:declarer
+components:
+  schemas:
+    ResultatVerification:
+      type: object
+      properties:
+        decision:
+          type: string
+          enum:
+          - autorise
+          - non_autorise
+          - verification_manuelle
+        motif:
+          type: string
+          nullable: true
+          example: AUT_EXPIREE
+        reference_consultation:
+          type: string
+    Vente:
+      type: object
+      required:
+      - reference_consultation
+      - numero_serie
+      properties:
+        reference_consultation:
+          type: string
+        numero_serie:
+          type: string
+        marque:
+          type: string
+        modele:
+          type: string
+        date:
+          type: string
+          format: date
+    Erreur:
+      type: object
+      properties:
+        code:
+          type: string
+          example: non_trouve
+        message:
+          type: string
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: Identifiants délivrés après habilitation.
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.exemple.gouv.fr/oauth2/token
+          scopes:
+            autorisation:verifier: Vérifier une autorisation
+            vente:declarer: Déclarer une vente
+security:
+- OAuth2: []

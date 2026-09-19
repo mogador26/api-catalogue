@@ -1,0 +1,144 @@
+openapi: 3.0.3
+info:
+  title: API Référentiel des services préfectoraux
+  description: Sites préfectoraux, horaires et démarches traitées (API de démonstration).
+  version: 1.5.0
+  contact: {}
+  license:
+    name: Licence Ouverte Etalab 2.0
+    url: https://github.com/etalab/licence-ouverte/blob/master/LO.md
+servers:
+- url: https://api.exemple.gouv.fr/services-prefectoraux/v1
+paths:
+  /sites:
+    get:
+      summary: Lister les sites
+      description: Filtrage par commune, département ou démarche.
+      tags:
+      - Sites
+      parameters:
+      - name: page
+        in: query
+        description: Numéro de page (à partir de 1)
+        required: false
+        schema:
+          type: integer
+        example: 1
+      - name: taille
+        in: query
+        description: Éléments par page (max 100)
+        required: false
+        schema:
+          type: integer
+        example: 20
+      - name: code_commune
+        in: query
+        description: Code INSEE de la commune
+        required: false
+        schema:
+          type: string
+        example: '33063'
+      - name: departement
+        in: query
+        description: Code département
+        required: false
+        schema:
+          type: string
+      - name: demarche
+        in: query
+        description: Code de démarche
+        required: false
+        schema:
+          type: string
+        example: titre_sejour
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resultats:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Site'
+                  total:
+                    type: integer
+        '400':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+  /sites/{id}:
+    get:
+      summary: Consulter un site
+      description: Fiche complète d'un site préfectoral.
+      tags:
+      - Sites
+      parameters:
+      - name: id
+        in: path
+        description: Identifiant stable
+        required: true
+        schema:
+          type: string
+        example: PREF-033
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Site'
+        '404':
+          description: Erreur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+components:
+  schemas:
+    Site:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+          - prefecture
+          - sous_prefecture
+          - antenne
+        nom:
+          type: string
+        adresse:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        horaires:
+          type: array
+          items:
+            type: object
+            properties:
+              jour:
+                type: string
+              ouverture:
+                type: string
+              fermeture:
+                type: string
+        demarches:
+          type: array
+          items:
+            type: string
+    Erreur:
+      type: object
+      properties:
+        code:
+          type: string
+          example: non_trouve
+        message:
+          type: string
