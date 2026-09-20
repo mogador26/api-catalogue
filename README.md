@@ -13,21 +13,18 @@ mkdocs build --strict   # génère ./site et vérifie la complétude des fiches
 
 Avant publication, renseignez `site_url` dans `mkdocs.yml` : il sert aux pictogrammes des tuiles DSFR.
 
-## Docker (rootless)
+## Docker
 
 ```bash
-docker build -t catalogue-api --build-arg SITE_URL=https://catalogue.exemple.gouv.fr/ .
-docker run --rm -p 8080:8080 --read-only --tmpfs /tmp --cap-drop ALL \
-  --security-opt no-new-privileges catalogue-api
-# → http://localhost:8080/   (sonde : /healthz)
+docker build -t catalogue-api  .
+docker run --rm -p 8080:8080 catalogue-api
+# → http://localhost:8080/   
 ```
 
 - Construction en deux étapes : MkDocs (utilisateur `builder`, UID 10001) puis `nginxinc/nginx-unprivileged` (UID 101).
 - Aucun processus root à l'exécution : port 8080, PID et fichiers temporaires dans `/tmp`, compatible système de fichiers en lecture seule.
 - Le contenu du site appartient à root et n'est qu'en lecture pour nginx.
 - Configuration : `docker/nginx.conf` (global) et `docker/catalogue.conf` (site : en-têtes de sécurité, CSP, cache, gzip, `/healthz`, page 404).
-- IPv6 désactivé par défaut (`docker/catalogue.conf`) pour démarrer sur tout réseau de conteneur.
-- Nécessite BuildKit (par défaut depuis Docker 23).
 
 ## Organisation
 
