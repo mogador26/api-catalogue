@@ -12,7 +12,7 @@ picto: digital/application
 mots_cles: [refapp, canel, cartographie, applications, conformité, dette technique, indice de qualité, homologation]
 quota: non communiqué
 producteur:
-  nom: DNUM, ministère de l'Intérieur
+  nom: DTNUM, ministère de l'Intérieur
   equipe: Équipe produit RefApp
   contact: https://github.com/dnum-mi/referentiel-applications/issues
   support: https://github.com/dnum-mi/referentiel-applications
@@ -33,9 +33,7 @@ Pour chaque application, l'API permet de lire et de mettre à jour :
 - les **données** exposées ou consommées par l'application ;
 - la **dette technique**, la maturité et les technologies utilisées, avec le suivi de leur fin de vie.
 
-L'API calcule un **indice de qualité (IQ)** qui mesure la complétude de chaque fiche. Elle expose aussi les signalements, les abonnements, l'historique des modifications, les statistiques et la revue des corrélations entre applications.
 
-Les listes sont paginées (`page`, `pageSize` jusqu'à 100) et renvoient la forme `{ "results": [...], "total": n }`. La recherche d'applications accepte des filtres riches : texte libre, étiquette, type ou courriel d'acteur, organisation, site d'hébergement, fiches incomplètes (sans MOA, sans MOE, sans hébergement), statut, bornes de dates.
 
 ## Présentation pour les décideurs
 
@@ -85,10 +83,7 @@ L'API n'est pas ouverte : toutes les routes métier exigent une authentification
 
 **OAuth2 / OpenID Connect (flux C2B, utilisateur humain).** Le client obtient un jeton auprès du fournisseur d'identité de l'organisation (Authorization Code Flow avec PKCE, scopes `openid` et `profile`) et le transmet dans l'en-tête `Authorization`. Le backend vérifie la signature du jeton ; l'adresse électronique sert d'identifiant. Depuis la version 1.91, une **authentification forte** est exigée : une session de niveau insuffisant reçoit une réponse `403` avec `strongAuthRequired: true`.
 
-```bash
-curl -H "Authorization: Bearer $JETON_OIDC" \
-  "https://<instance-refapp>/api/v2/applications?page=0&pageSize=20"
-```
+
 
 **Clé d'API (flux B2B, machine à machine).** Un jeton de service ou un jeton personnel est transmis dans l'en-tête `x-refapp-token`. Le jeton est rattaché à un utilisateur et hérite de ses permissions.
 
