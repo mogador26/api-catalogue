@@ -244,3 +244,45 @@
 @media (max-width: 48em) {
   .visite-guidee__bulle { left: 1rem !important; right: 1rem; width: auto; }
 }
+
+/* Repli du sommaire latéral des fiches API */
+.menu-lateral-bouton {
+  width: 100%;
+  justify-content: flex-start;
+  margin-bottom: 1rem;
+}
+.menu-lateral-col--repliee {
+  flex: 0 0 3rem;
+  max-width: 3rem;
+}
+.menu-lateral-col--repliee .fr-sidemenu__inner > *:not(.menu-lateral-bouton),
+.menu-lateral-col--repliee .fr-sidemenu__title {
+  display: none;
+}
+.menu-lateral-col--repliee .menu-lateral-bouton {
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  justify-content: center;
+  margin-bottom: 0;
+}
+.menu-lateral-col--repliee ~ #contenu {
+  flex: 1 1 auto;
+  max-width: calc(100% - 3rem);
+}
+@media (min-width: 62em) {
+  .menu-lateral-col--repliee,
+  .menu-lateral-col--repliee ~ #contenu {
+    transition: flex-basis .18s ease, max-width .18s ease;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .menu-lateral-col--repliee,
+  .menu-lateral-col--repliee ~ #contenu {
+    transition: none;
+  }
+}
+/* Sous le point de rupture, les colonnes sont empilées : le repli n'a pas d'intérêt */
+@media (max-width: 61.99em) {
+  .menu-lateral-bouton { display: none; }
+}
